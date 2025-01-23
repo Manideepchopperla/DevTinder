@@ -1,26 +1,40 @@
-const express= require("express")
-const app=express()
-const {adminAuth,userAuth} = require("./middlewares/auth")
+const express = require("express")
+const connectDB = require("./config/database")
+const UserModel = require("./models/user")
 
+const app = express()
+app.use(express.json())
 
-app.use("/admin",adminAuth)
+app.post("/signup",async(req,res)=>{
 
-app.get("/user",userAuth,(req,res)=>{
-    console.log("User Data Fetched")
-    res.send("User Data Retrieved Successfully")
+    // const {firstName,lastName,emailId,password,age,gender}=req.body
+    // const userObj={
+    //     firstName,
+    //     lastName,
+    //     emailId,
+    //     password,
+    //     age,
+    //     gender
+    // }
+
+    const user = new UserModel(req.body)
+    try{
+        user.save()
+        res.send("User Signuped Successfully")
+    }
+    catch(err){
+        res.status(400).send("Error occured ",err.message)
+    }
 })
 
-app.get("/admin/getAllData",(req,res)=>{
-    console.log("All Data Fetched")
-    res.send("All Data Retrieved Successfully")
-})
+connectDB()
+    .then(()=>{
+        console.log("Database Connection Established Successfully")
+        app.listen(3000,()=>{
+            console.log("server running at port 3000 ")
+        })
+    })
+    .catch(()=>{
+        console.log("Database Connection doesn't Established")
+    })
 
-app.delete("/admin/deleteUser",(req,res)=>{
-    console.log("User Data Deleted Successfully")
-    res.send("User Data Deleted Successfully")
-})
-
-
-app.listen(3000,()=>{
-    console.log("server running")
-})
