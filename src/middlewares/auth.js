@@ -1,26 +1,27 @@
-const adminAuth=(req,res,next)=>{
-    const token="xyz"
-    const isAdminAuthorized=token==="xyz"
-    if(!isAdminAuthorized){
-        res.status(401).send("Unauthorized Admin")
-    }
-    else{
-        next()
-    }
-}
+const jwt=require('jsonwebtoken')
+const UserModel = require('../models/user');
 
-const userAuth=(req,res,next)=>{
-    const token="xyz"
-    const isAdminAuthorized=token==="xyz"
-    if(!isAdminAuthorized){
-        res.status(401).send("Unauthorized User")
-    }
-    else{
+const userAuth= async (req,res,next)=>{
+    const {jwtToken} = req.cookies;
+    try{
+        if(!jwtToken){
+            throw new Error("Please Login")
+        }
+        const decodeMsg = await jwt.verify(jwtToken,"Manideep@DevTinder$1820")
+        const id = decodeMsg.id
+        const user = await UserModel.findById({_id: id})
+        if(!user){
+            throw new Error("invalid User")
+        }
+        req.user = user
         next()
     }
+    catch(err){
+        res.status(401).send(`Error occured : ${err.message}`)
+    }
+
 }
 
 module.exports={
-    adminAuth,
-    userAuth
+    userAuth,
 }
