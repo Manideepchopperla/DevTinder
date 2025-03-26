@@ -1,7 +1,8 @@
 const express = require('express');
 const { validateSignUpPage } = require('../utils/validation');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const UserModel = require('../models/user');
+const { userAuth } = require('../middlewares/auth');
 const authRouter = express.Router();
 
 
@@ -18,7 +19,12 @@ authRouter.post("/signup",async(req,res)=>{
         const user = new UserModel({firstName, lastName, emailId,password:passwordHash})
         await user.save()
         const token = await user.getJWT()
-        res.cookie("jwtToken",token)
+        res.cookie("jwtToken",token,{
+            httpOnly: true,
+            secure: true,
+            sameSite: "Strict",
+            maxAge: 1000 * 60 * 60 * 24 * 7 
+        })
         res.send("User Signuped Successfully")
     }
     catch(err){
@@ -49,6 +55,17 @@ authRouter.post("/login",async(req,res)=>{
 
     catch(err){
         res.status(401).send(`Error occured : ${err.message}`)
+    }
+})
+
+// Logout API 
+
+authRouter.post("/logout",userAuth ,async(req,res)=>{
+    try{
+        res.clearCookie("jwtToken",{ httpOnly: true, secure: true, sameSite: "Strict" });
+        res.send("User Logged Out Successfully")
+    }catch(err){
+        res.status(404).send("Error occured : "+err.message)
     }
 })
 
