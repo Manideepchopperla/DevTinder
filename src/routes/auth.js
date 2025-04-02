@@ -25,7 +25,7 @@ authRouter.post("/signup",async(req,res)=>{
             sameSite: "Strict",
             maxAge: 1000 * 60 * 60 * 24 * 7 
         })
-        res.send("User Signuped Successfully")
+        res.send(user)
     }
     catch(err){
         res.status(401).send(`Error occured : ${err.message}`)
@@ -50,7 +50,7 @@ authRouter.post("/login",async(req,res)=>{
         }
         const token = await user.getJWT()
         res.cookie("jwtToken",token)
-        res.send("User Logged In Successfully")
+        res.send(user)
     }
 
     catch(err){

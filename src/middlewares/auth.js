@@ -5,11 +5,11 @@ const userAuth= async (req,res,next)=>{
     const {jwtToken} = req.cookies;
     try{
         if(!jwtToken){
-            throw new Error("Please Login")
+            return res.status(401).json({message: "Please Login!!"  })
         }
         const decodeMsg = await jwt.verify(jwtToken,"Manideep@DevTinder$1820")
         const id = decodeMsg.id
-        const user = await UserModel.findById({_id: id})
+        const user = await UserModel.findById(id)
         if(!user){
             throw new Error("invalid User")
         }
@@ -17,7 +17,7 @@ const userAuth= async (req,res,next)=>{
         next()
     }
     catch(err){
-        res.status(401).send(`Error occured : ${err.message}`)
+        res.status(400).send(`Error occured : ${err.message}`)
     }
 
 }

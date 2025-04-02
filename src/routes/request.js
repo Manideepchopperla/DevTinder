@@ -52,8 +52,7 @@ requestRouter.post("/request/send/:status/:userId",userAuth,async(req,res)=>{
         })
         await connectionRequest.save()
         
-        console.log(fromUserId+" has sent the Connection Request to "+toUserId)
-        res.json({message:"Connection Request Sent Successfully"})
+        res.json({message:fromUserId+" has sent the Connection Request to "+toUserId})
     }catch(err){
         res.status(400).json({message:"Error: "+err.message})
     }
@@ -74,8 +73,6 @@ requestRouter.post("/request/review/:status/:requestId", userAuth, async (req, r
             throw new Error("Invalid Status Type");
         }
 
-        console.log(loggedInUser._id);
-        console.log(requestId);
 
         // Find the connection request
         const connectionDetails = await ConnectionRequest.findOne({

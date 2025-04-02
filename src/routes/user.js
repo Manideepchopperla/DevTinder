@@ -16,8 +16,6 @@ userRouter.get("/user/requests/received",userAuth,async(req,res)=>{
             status: "interested"
         }).populate("fromUserId","firstName lastName photoUrl skills gender age about");
 
-        console.log(connectionRequests)
-
         res.status(200).json({message:"Requests Recieved Data Fetched Successfully",data: connectionRequests})
     }
     catch(error){
@@ -51,7 +49,7 @@ userRouter.get("/user/connections",userAuth,async(req,res)=>{
 })
 
 
-userRouter.get("/user/feed",userAuth,async(req,res)=>{
+userRouter.get("/feed",userAuth,async(req,res)=>{
     try{
         const loggedInUser = req.user;
         const pages = req.query.page || 1;
@@ -76,9 +74,8 @@ userRouter.get("/user/feed",userAuth,async(req,res)=>{
             ]
         }).select(USER_SAFE_DATA).skip(skip).limit(limit);
 
-        console.log(feedData)
 
-        res.status(400).json({message: "Feed Generated Successfully",data: feedData}) 
+        res.status(200).json({message: "Feed Generated Successfully",data: feedData}) 
     }
     catch(error){
         res.status(400).json({message: error.message})
